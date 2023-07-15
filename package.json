@@ -1,0 +1,39 @@
+{
+  "name": "cts-template",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node --swc src",
+    "start": "node dist",
+    "start:pm2": "tsc && pm2 start",
+    "lint": "eslint src --ignore-path .gitignore"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "devDependencies": {
+    "@swc/core": "^1.3.60",
+    "@trivago/prettier-plugin-sort-imports": "^4.1.1",
+    "@types/git-rev-sync": "^2.0.0",
+    "@types/node": "^20.2.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.7",
+    "eslint": "^8.41.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.8",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@pikokr/command.ts": "^5.6.1",
+    "chalk": "4",
+    "discord.js": "^14.11.0",
+    "git-rev-sync": "^3.0.2",
+    "jejudo": "^0.1.5",
+    "tslog": "^4.8.2",
+    "zod": "^3.21.4"
+  },
+  "packageManager": "pnpm@8.6.6"
+}
