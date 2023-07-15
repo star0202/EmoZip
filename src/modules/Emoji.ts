@@ -63,11 +63,15 @@ export class Emoji extends Extension {
 
     const files = await unzip(path)
 
-    for (const file of files) {
-      await i.guild.emojis.create({
-        name: parse(file).name,
-        attachment: readFileSync(file),
-      })
+    try {
+      for (const file of files) {
+        await i.guild.emojis.create({
+          name: parse(file).name,
+          attachment: readFileSync(file),
+        })
+      }
+    } catch (e) {
+      return i.editReply('❌ Failed to upload emoji (likely due to permission)')
     }
 
     await i.editReply('✅ Done')
