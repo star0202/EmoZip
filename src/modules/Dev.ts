@@ -139,6 +139,4 @@ class Dev extends Extension {
   }
 }
 
-export const setup = async () => {
-  return new Dev()
-}
+export const setup = async () => new Dev()

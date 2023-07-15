@@ -2,3 +2,5 @@ node_modules
 dist
 config.json
 .idea
+data/*
+!data/.gitkeep
