@@ -1,39 +1,14 @@
-import { download, unzip, zip } from '../utils'
-import {
-  Extension,
-  applicationCommand,
-  option,
-  ownerOnly,
-} from '@pikokr/command.ts'
+import { clean, download, unzip, zip } from '../utils'
+import { Extension, applicationCommand, option } from '@pikokr/command.ts'
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ChatInputCommandInteraction,
 } from 'discord.js'
-import { readFileSync, readdirSync, unlinkSync } from 'fs'
-import { join, parse } from 'path'
+import { readFileSync } from 'fs'
+import { parse } from 'path'
 
 export class Emoji extends Extension {
-  @ownerOnly
-  @applicationCommand({
-    type: ApplicationCommandType.ChatInput,
-    name: 'clean',
-    description: '[OWNER] Clean datas',
-  })
-  async clean(i: ChatInputCommandInteraction) {
-    await i.deferReply()
-
-    let cnt = 0
-    readdirSync(join(__dirname, '..', '..', 'data')).forEach((file) => {
-      if (file !== '.gitkeep') {
-        unlinkSync(join(__dirname, '..', '..', 'data', file))
-        cnt++
-      }
-    })
-
-    await i.editReply(`✅ Cleaned ${cnt} files`)
-  }
-
   @applicationCommand({
     type: ApplicationCommandType.ChatInput,
     name: 'zip',
@@ -59,6 +34,8 @@ export class Emoji extends Extension {
     await i.editReply({
       files: [path],
     })
+
+    clean()
   }
 
   @applicationCommand({
@@ -94,6 +71,8 @@ export class Emoji extends Extension {
     }
 
     await i.editReply('✅ Done')
+
+    clean()
   }
 }
 
