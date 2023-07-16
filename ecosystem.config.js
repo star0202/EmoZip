@@ -2,7 +2,7 @@
 module.exports = {
   apps: [
     {
-      name: 'EmojiZip',
+      name: 'EmoZip',
       script: './dist/index.js',
     },
   ],
