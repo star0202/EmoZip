@@ -63,13 +63,12 @@ export class Emoji extends Extension {
     const selectCollector = response.createMessageComponentCollector({
       filter,
       componentType: ComponentType.StringSelect,
-      time: 60000,
+      time: 30 * 1000,
     })
 
     const buttonCollector = response.createMessageComponentCollector({
       filter,
       componentType: ComponentType.Button,
-      time: 60000,
     })
 
     let selected: { name: string; url: string }[] = emojis.map((e) => ({
@@ -77,14 +76,18 @@ export class Emoji extends Extension {
       url: e.url,
     }))
 
-    selectCollector.on('collect', async (j: StringSelectMenuInteraction) => {
-      await j.deferUpdate()
+    selectCollector
+      .on('collect', async (j: StringSelectMenuInteraction) => {
+        await j.deferUpdate()
 
-      selected = j.values.map((v) => {
-        const [name, url] = v.split(' ')
-        return { name, url }
+        selected = j.values.map((v) => {
+          const [name, url] = v.split(' ')
+          return { name, url }
+        })
       })
-    })
+      .on('end', async () => {
+        await i.editReply({ content: '❌ Timeout', components: [] })
+      })
 
     buttonCollector.on('collect', async (j: ButtonInteraction) => {
       if (j.customId === 'zip') {
