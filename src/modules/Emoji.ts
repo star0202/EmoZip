@@ -119,7 +119,7 @@ export class Emoji extends Extension {
           await j.deferUpdate()
 
           await i.editReply({
-            content: '❌ Cancelled',
+            content: '❌ Canceled',
             components: [],
           })
         }
