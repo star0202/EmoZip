@@ -37,7 +37,8 @@ export default class CustomClient extends CommandClient {
   async onReady() {
     this.jejudo = new Jejudo(this.discord, {
       isOwner: (user) => this.owners.has(user.id),
-      prefix: `!`,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      prefix: `<@!${this.discord.user!.id}> `,
       noPermission: (i) => i.reply('Permission denied'),
     })
 
