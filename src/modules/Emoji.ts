@@ -15,8 +15,7 @@ export class Emoji extends Extension {
     description: 'Zip emoji',
   })
   async zip(i: ChatInputCommandInteraction) {
-    if (!i.guild)
-      return i.editReply('❌ This command is only available in guilds')
+    if (!i.guild) return i.reply('❌ This command is only available in guilds')
 
     await i.deferReply()
 
@@ -53,8 +52,7 @@ export class Emoji extends Extension {
     })
     _: string // eslint-disable-line @typescript-eslint/no-unused-vars
   ) {
-    if (!i.guild)
-      return i.editReply('❌ This command is only available in guilds')
+    if (!i.guild) return i.reply('❌ This command is only available in guilds')
 
     await i.deferReply()
 
