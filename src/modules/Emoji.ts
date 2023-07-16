@@ -31,6 +31,7 @@ export class Emoji extends Extension {
     if (!emojis) return i.editReply('❌ No emojis found')
 
     const response = await i.editReply({
+      content: '⏳ Select emojis to zip',
       components: [
         new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
           new StringSelectMenuBuilder()
