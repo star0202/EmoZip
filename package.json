@@ -4,10 +4,9 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "dev": "ts-node --swc src",
-    "start": "node dist",
-    "start:pm2": "tsc && pm2 start",
+    "start": "pnpm build && pm2 start",
     "lint": "eslint src --ignore-path .gitignore"
   },
   "keywords": [],
@@ -25,6 +24,7 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.8",
+    "rimraf": "^5.0.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },
