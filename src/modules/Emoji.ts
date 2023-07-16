@@ -48,11 +48,19 @@ export class Emoji extends Extension {
               )
             )
         ),
+
         new ActionRowBuilder<ButtonBuilder>().addComponents(
           new ButtonBuilder()
             .setCustomId('zip')
             .setLabel('Zip')
-            .setStyle(ButtonStyle.Success)
+            .setEmoji('📦')
+            .setStyle(ButtonStyle.Success),
+
+          new ButtonBuilder()
+            .setCustomId('cancel')
+            .setLabel('Cancel')
+            .setEmoji('✖️')
+            .setStyle(ButtonStyle.Danger)
         ),
       ],
     })
@@ -108,6 +116,13 @@ export class Emoji extends Extension {
         })
 
         clean()
+      } else if (j.customId === 'cancel') {
+        await j.deferUpdate()
+
+        await i.editReply({
+          content: '❌ Cancelled',
+          components: [],
+        })
       }
     })
   }
