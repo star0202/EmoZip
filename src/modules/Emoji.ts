@@ -11,7 +11,7 @@ import {
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } from 'discord.js'
-import type { ButtonInteraction, StringSelectMenuInteraction } from 'discord.js'
+import type { MessageComponentInteraction } from 'discord.js'
 import { readFileSync } from 'fs'
 import { parse } from 'path'
 
@@ -66,27 +66,20 @@ export class Emoji extends Extension {
       ],
     })
 
-    const filter = (j: StringSelectMenuInteraction | ButtonInteraction) =>
-      j.user.id === i.user.id
-
-    const selectCollector = response.createMessageComponentCollector({
-      filter,
-      componentType: ComponentType.StringSelect,
-      time: 30 * 1000,
-    })
-
-    const buttonCollector = response.createMessageComponentCollector({
-      filter,
-      componentType: ComponentType.Button,
-    })
-
     let selected: { name: string; url: string }[] = emojis.map((e) => ({
       name: e.name ?? 'unknown',
       url: e.url,
     }))
 
-    selectCollector
-      .on('collect', async (j: StringSelectMenuInteraction) => {
+    const filter = (j: MessageComponentInteraction) => j.user.id === i.user.id
+
+    response
+      .createMessageComponentCollector({
+        filter,
+        componentType: ComponentType.StringSelect,
+        time: 30 * 1000,
+      })
+      .on('collect', async (j) => {
         await j.deferUpdate()
 
         selected = j.values.map((v) => {
@@ -98,34 +91,39 @@ export class Emoji extends Extension {
         await i.editReply({ content: '❌ Timeout', components: [] })
       })
 
-    buttonCollector.on('collect', async (j: ButtonInteraction) => {
-      if (j.customId === 'zip') {
-        await j.deferUpdate()
+    response
+      .createMessageComponentCollector({
+        filter,
+        componentType: ComponentType.Button,
+      })
+      .on('collect', async (j) => {
+        if (j.customId === 'zip') {
+          await j.deferUpdate()
 
-        await i.editReply({
-          content: '⏳ Zipping...',
-          components: [],
-        })
+          await i.editReply({
+            content: '⏳ Zipping...',
+            components: [],
+          })
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const path = await zip(selected, i.guild!.id)
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const path = await zip(selected, i.guild!.id)
 
-        await i.editReply({
-          content: `✅ ${selected.length} emojis zipped`,
-          files: [path],
-          components: [],
-        })
+          await i.editReply({
+            content: `✅ ${selected.length} emojis zipped`,
+            files: [path],
+            components: [],
+          })
 
-        clean()
-      } else if (j.customId === 'cancel') {
-        await j.deferUpdate()
+          clean()
+        } else if (j.customId === 'cancel') {
+          await j.deferUpdate()
 
-        await i.editReply({
-          content: '❌ Cancelled',
-          components: [],
-        })
-      }
-    })
+          await i.editReply({
+            content: '❌ Cancelled',
+            components: [],
+          })
+        }
+      })
   }
 
   @applicationCommand({
