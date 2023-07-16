@@ -1,10 +1,17 @@
 import { clean, download, unzip, zip } from '../utils'
 import { Extension, applicationCommand, option } from '@pikokr/command.ts'
 import {
+  ActionRowBuilder,
   ApplicationCommandOptionType,
   ApplicationCommandType,
+  ButtonBuilder,
+  ButtonStyle,
   ChatInputCommandInteraction,
+  ComponentType,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
 } from 'discord.js'
+import type { ButtonInteraction, StringSelectMenuInteraction } from 'discord.js'
 import { readFileSync } from 'fs'
 import { parse } from 'path'
 
@@ -21,20 +28,85 @@ export class Emoji extends Extension {
 
     const emojis = await i.guild.emojis.fetch()
 
-    if (!emojis) return i.editReply('❌ No emoji found')
+    if (!emojis) return i.editReply('❌ No emojis found')
 
-    const list = emojis.map((e) => ({
+    const response = await i.editReply({
+      components: [
+        new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+          new StringSelectMenuBuilder()
+            .setCustomId('emoji')
+            .setPlaceholder('Select emojis to zip')
+            .setMaxValues(emojis.size)
+            .setMinValues(1)
+            .addOptions(
+              emojis.map((e) =>
+                new StringSelectMenuOptionBuilder()
+                  .setLabel(e.name ?? 'unknown')
+                  .setValue(`${e.name} ${e.url}`)
+                  .setEmoji(e.id)
+                  .setDefault(true)
+              )
+            )
+        ),
+        new ActionRowBuilder<ButtonBuilder>().addComponents(
+          new ButtonBuilder()
+            .setCustomId('zip')
+            .setLabel('Zip')
+            .setStyle(ButtonStyle.Success)
+        ),
+      ],
+    })
+
+    const filter = (j: StringSelectMenuInteraction | ButtonInteraction) =>
+      j.user.id === i.user.id
+
+    const selectCollector = response.createMessageComponentCollector({
+      filter,
+      componentType: ComponentType.StringSelect,
+      time: 60000,
+    })
+
+    const buttonCollector = response.createMessageComponentCollector({
+      filter,
+      componentType: ComponentType.Button,
+      time: 60000,
+    })
+
+    let selected: { name: string; url: string }[] = emojis.map((e) => ({
       name: e.name ?? 'unknown',
       url: e.url,
     }))
 
-    const path = await zip(list, i.guild.id)
+    selectCollector.on('collect', async (j: StringSelectMenuInteraction) => {
+      await j.deferUpdate()
 
-    await i.editReply({
-      files: [path],
+      selected = j.values.map((v) => {
+        const [name, url] = v.split(' ')
+        return { name, url }
+      })
     })
 
-    clean()
+    buttonCollector.on('collect', async (j: ButtonInteraction) => {
+      if (j.customId === 'zip') {
+        await j.deferUpdate()
+
+        await i.editReply({
+          content: '⏳ Zipping...',
+          components: [],
+        })
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const path = await zip(selected, i.guild!.id)
+
+        await i.editReply({
+          content: `✅ ${selected.length} emojis zipped`,
+          files: [path],
+          components: [],
+        })
+
+        clean()
+      }
+    })
   }
 
   @applicationCommand({
