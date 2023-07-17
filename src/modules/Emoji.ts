@@ -1,15 +1,13 @@
+import EmojiSelect from '../structures/components/EmojiSelect'
+import ZipConfirm from '../structures/components/ZipConfirm'
+import type { Emoji as EmojiType } from '../types'
 import { clean, download, unzip, zip } from '../utils'
 import { Extension, applicationCommand, option } from '@pikokr/command.ts'
 import {
-  ActionRowBuilder,
   ApplicationCommandOptionType,
   ApplicationCommandType,
-  ButtonBuilder,
-  ButtonStyle,
   ChatInputCommandInteraction,
   ComponentType,
-  StringSelectMenuBuilder,
-  StringSelectMenuOptionBuilder,
 } from 'discord.js'
 import type { MessageComponentInteraction } from 'discord.js'
 import { readFileSync } from 'fs'
@@ -32,41 +30,10 @@ export class Emoji extends Extension {
 
     const response = await i.editReply({
       content: '⏳ Select emojis to zip',
-      components: [
-        new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
-          new StringSelectMenuBuilder()
-            .setCustomId('emoji')
-            .setPlaceholder('Select emojis to zip')
-            .setMaxValues(emojis.size)
-            .setMinValues(1)
-            .addOptions(
-              emojis.map((e) =>
-                new StringSelectMenuOptionBuilder()
-                  .setLabel(e.name ?? 'unknown')
-                  .setValue(`${e.name} ${e.url}`)
-                  .setEmoji(e.id)
-                  .setDefault(true)
-              )
-            )
-        ),
-
-        new ActionRowBuilder<ButtonBuilder>().addComponents(
-          new ButtonBuilder()
-            .setCustomId('zip')
-            .setLabel('Zip')
-            .setEmoji('📦')
-            .setStyle(ButtonStyle.Success),
-
-          new ButtonBuilder()
-            .setCustomId('cancel')
-            .setLabel('Cancel')
-            .setEmoji('✖️')
-            .setStyle(ButtonStyle.Danger)
-        ),
-      ],
+      components: [new EmojiSelect(emojis), new ZipConfirm()],
     })
 
-    let selected: { name: string; url: string }[] = emojis.map((e) => ({
+    let selected: EmojiType[] = emojis.map((e) => ({
       name: e.name ?? 'unknown',
       url: e.url,
     }))
@@ -97,31 +64,38 @@ export class Emoji extends Extension {
         componentType: ComponentType.Button,
       })
       .on('collect', async (j) => {
-        if (j.customId === 'zip') {
-          await j.deferUpdate()
+        switch (j.customId) {
+          case 'confirm': {
+            await j.deferUpdate()
 
-          await i.editReply({
-            content: '⏳ Zipping...',
-            components: [],
-          })
+            await i.editReply({
+              content: '⏳ Zipping...',
+              components: [],
+            })
 
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const path = await zip(selected, i.guild!.id)
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const path = await zip(selected, i.guild!.id)
 
-          await i.editReply({
-            content: `✅ ${selected.length} emojis zipped`,
-            files: [path],
-            components: [],
-          })
+            await i.editReply({
+              content: `✅ ${selected.length} emojis zipped`,
+              files: [path],
+              components: [],
+            })
 
-          clean()
-        } else if (j.customId === 'cancel') {
-          await j.deferUpdate()
+            clean()
 
-          await i.editReply({
-            content: '❌ Canceled',
-            components: [],
-          })
+            break
+          }
+
+          case 'cancel':
+            await j.deferUpdate()
+
+            await i.editReply({
+              content: '❌ Canceled',
+              components: [],
+            })
+
+            break
         }
       })
   }

@@ -1,16 +1,11 @@
+import type { Emoji } from '../types'
 import { download } from './download'
 import archiver from 'archiver'
 import { createReadStream, createWriteStream } from 'fs'
 import { join, parse } from 'path'
 import unzipper from 'unzipper'
 
-export const zip = async (
-  emojis: {
-    name: string
-    url: string
-  }[],
-  name: string
-) => {
+export const zip = async (emojis: Emoji[], name: string) => {
   const archive = archiver('zip', { zlib: { level: 9 } })
 
   const path = join(__dirname, '..', '..', 'data', `${name}.zip`)
