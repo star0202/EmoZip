@@ -61,7 +61,7 @@ export class Emoji extends Extension {
       })
       .on('collect', async (j) => {
         switch (j.customId) {
-          case 'confirm': {
+          case 'zip': {
             await j.deferUpdate()
 
             await i.editReply({
