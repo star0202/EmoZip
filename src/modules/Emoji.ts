@@ -1,7 +1,6 @@
 import EmojiSelect from '../structures/components/EmojiSelect'
 import ZipConfirm from '../structures/components/ZipConfirm'
-import type { Emoji as EmojiType } from '../types'
-import { clean, download, unzip, zip } from '../utils'
+import { clean, createComponentFilter, download, unzip, zip } from '../utils'
 import { Extension, applicationCommand, option } from '@pikokr/command.ts'
 import {
   ApplicationCommandOptionType,
@@ -9,7 +8,6 @@ import {
   ChatInputCommandInteraction,
   ComponentType,
 } from 'discord.js'
-import type { MessageComponentInteraction } from 'discord.js'
 import { readFileSync } from 'fs'
 import { parse } from 'path'
 
@@ -38,11 +36,9 @@ export class Emoji extends Extension {
       url: e.url,
     }))
 
-    const filter = (j: MessageComponentInteraction) => j.user.id === i.user.id
-
     response
       .createMessageComponentCollector({
-        filter,
+        filter: createComponentFilter(i),
         componentType: ComponentType.StringSelect,
         time: 30 * 1000,
       })
@@ -60,7 +56,7 @@ export class Emoji extends Extension {
 
     response
       .createMessageComponentCollector({
-        filter,
+        filter: createComponentFilter(i),
         componentType: ComponentType.Button,
       })
       .on('collect', async (j) => {
