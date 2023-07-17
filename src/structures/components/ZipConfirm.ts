@@ -13,7 +13,7 @@ export default class ZipConfirm extends ActionRowBuilder<ButtonBuilder> {
       new ButtonBuilder()
         .setCustomId('cancel')
         .setLabel('Cancel')
-        .setEmoji('❌')
+        .setEmoji('✖️')
         .setStyle(ButtonStyle.Danger)
     )
   }
