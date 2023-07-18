@@ -1,6 +1,6 @@
 import { config } from './config'
 import Client from './structures/Client'
-import { getLogger } from './utils'
+import { getLogger } from './utils/logging'
 
 const client = new Client(getLogger('EmoZip', config.debug ? 2 : 3))
 

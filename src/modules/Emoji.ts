@@ -1,6 +1,9 @@
 import EmojiSelect from '../structures/components/EmojiSelect'
 import ZipConfirm from '../structures/components/ZipConfirm'
-import { clean, createComponentFilter, download, unzip, zip } from '../utils'
+import { clean } from '../utils/clean'
+import { download } from '../utils/download'
+import { createComponentFilter } from '../utils/filter'
+import { unzip, zip } from '../utils/zip'
 import { Extension, applicationCommand, option } from '@pikokr/command.ts'
 import {
   ApplicationCommandOptionType,
