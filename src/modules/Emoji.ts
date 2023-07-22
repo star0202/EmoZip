@@ -1,9 +1,7 @@
+import EmojiManager from '../structures/Emoji'
 import EmojiSelect from '../structures/components/EmojiSelect'
 import ZipConfirm from '../structures/components/ZipConfirm'
-import { clean } from '../utils/clean'
-import { download } from '../utils/download'
 import { createComponentFilter } from '../utils/filter'
-import { unzip, zip } from '../utils/zip'
 import { Extension, applicationCommand, option } from '@pikokr/command.ts'
 import {
   ApplicationCommandOptionType,
@@ -15,6 +13,14 @@ import { readFileSync } from 'fs'
 import { parse } from 'path'
 
 export class Emoji extends Extension {
+  private readonly manager: EmojiManager
+
+  constructor() {
+    super()
+
+    this.manager = new EmojiManager()
+  }
+
   @applicationCommand({
     type: ApplicationCommandType.ChatInput,
     name: 'zip',
@@ -73,7 +79,7 @@ export class Emoji extends Extension {
             })
 
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const path = await zip(selected, i.guild!.id)
+            const path = await this.manager.zip(selected, i.guild!.id)
 
             await i.editReply({
               content: `✅ ${selected.length} emojis zipped`,
@@ -81,7 +87,7 @@ export class Emoji extends Extension {
               components: [],
             })
 
-            clean()
+            await this.manager.clean()
 
             break
           }
@@ -119,9 +125,7 @@ export class Emoji extends Extension {
     await i.deferReply()
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const path = await download(i.options.getAttachment('file')!.url)
-
-    const files = await unzip(path)
+    const files = await this.manager.unzip(i.options.getAttachment('file')!.url)
 
     try {
       for (const file of files) {
@@ -136,7 +140,7 @@ export class Emoji extends Extension {
 
     await i.editReply('✅ Done')
 
-    clean()
+    await this.manager.clean()
   }
 }
 
