@@ -35,6 +35,27 @@ export class Emoji extends Extension {
 
     if (!emojis) return i.editReply('❌ No emojis found')
 
+    if (emojis.size > 25) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const path = await this.manager.zip(
+        emojis.map((e) => ({
+          name: e.name ?? 'unknown',
+          url: e.url,
+        })),
+        i.guild.id
+      )
+
+      await i.editReply({
+        content: `✅ ${emojis.size} emojis zipped`,
+        files: [path],
+        components: [],
+      })
+
+      await this.manager.clean()
+
+      return
+    }
+
     const response = await i.editReply({
       content: '⏳ Select emojis to zip',
       components: [new EmojiSelect(emojis), new ZipConfirm()],
