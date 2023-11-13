@@ -32,7 +32,7 @@
     "@pikokr/command.ts": "^5.6.1",
     "archiver": "^5.3.1",
     "axios": "^1.4.0",
-    "chalk": "4",
+    "chalk": "5",
     "discord.js": "^14.11.0",
     "git-rev-sync": "^3.0.2",
     "jejudo": "^0.1.5",
