@@ -40,5 +40,5 @@
     "unzipper": "^0.10.14",
     "zod": "^3.21.4"
   },
-  "packageManager": "pnpm@8.6.6"
+  "packageManager": "pnpm@8.15.4"
 }
